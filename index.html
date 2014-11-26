@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hardware Setup Demo</title>
+
+  <script src="//static.opentok.com/webrtc/v2.2/js/opentok.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="/css/hardware-setup.css">
+  <script src="/js/hardware-setup.js"></script>
+
+</head>
+<body>
+
+  <div class="container bump-me">
+    <div id="hardware-setup"></div>
+  </div>
+
+  <script type="text/javascript">
+
+    var element = document.querySelector('#hardware-setup');
+
+    var component = createOpentokHardwareSetupComponent(element, {
+      insertMode: 'append'
+    }, function(error) {
+      if (error) {
+        console.error('Error: ', error);
+        document.querySelector('#hardware-setup').innerHTML = '<strong>Error getting ' +
+          'devices</strong>: ' + error.message;
+        return;
+      }
+
+      var button = document.createElement('button');
+      button.onclick = component.destroy;
+      button.appendChild(document.createTextNode('Destroy'));
+      element.appendChild(button);
+
+    });
+
+  </script>
+
+</body>
+</html>

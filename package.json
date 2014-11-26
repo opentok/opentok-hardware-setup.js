@@ -1,0 +1,21 @@
+{
+  "name":        "opentok.js-hardware-setup",
+  "version":     "1.0.0",
+  "description": "opentok.js Hardware Setup Component",
+  "url":         "https://tokbox.com/",
+  "keywords":    ["webrtc","opentok"],
+  "author":      "Tokbox <support@tokbox.com>",
+  "license":     "MIT",
+  "lib":         "js",
+  "main":        "./js/hardware-setup.js",
+  "repository":  "git://github.com/opentok/opentok.js-hardware-setup.git",
+  "browserify":   {
+    "dependencies": "",
+    "main":         "js/hardware-setup.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "gulp":       "^3.8.10",
+    "gulp-serve": "^0.3.0"
+  }
+}
