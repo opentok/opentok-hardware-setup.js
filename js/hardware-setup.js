@@ -269,15 +269,17 @@ var authenticateForDeviceLabels = function(callback) {
         if (window.location.protocol === 'http:') {
           callback();
         } else {
-          (function() {
-            if (navigator.getUserMedia) {
-              return navigator.getUserMedia.bind(navigator);
-            } else if (navigator.mozGetUserMedia) {
-              return navigator.mozGetUserMedia.bind(navigator);
-            } else if (navigator.webkitGetUserMedia) {
-              return navigator.webkitGetUserMedia.bind(navigator);
-            }
-          })(constraints, function(stream) {
+          var getUserMedia;
+          if (navigator.getUserMedia) {
+            getUserMedia = navigator.getUserMedia.bind(navigator);
+          } else if (navigator.mozGetUserMedia) {
+            getUserMedia = navigator.mozGetUserMedia.bind(navigator);
+          } else if (navigator.webkitGetUserMedia) {
+            getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
+          } else {
+            return callback(new Error('getUserMedia not supported in this browser'));
+          }
+          getUserMedia(constraints, function(stream) {
             stream.stop();
             callback();
           }, function(error) {
