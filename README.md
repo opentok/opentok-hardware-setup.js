@@ -1,5 +1,5 @@
-opentok.js-hardware-setup
-=========================
+OpenTok hardware set-up component
+=================================
 
 The OpenTok hardware set-up component provides a user interface for clients
 using the [OpenTok.js] [1] library to select the camera and microphone. The
@@ -14,10 +14,9 @@ versions of the component.
 
 Run the following to build the component:
 
-```npm install -g gulp
-npm install
-gulp
-```
+    npm install -g gulp
+    npm install
+    gulp
 
 This creates a .js file that is useable with JavaScript module loaders and
 puts it in the ./dist directory, along with the .css file and a minified version
@@ -25,6 +24,15 @@ of the .js file.
 
 Copy the files in the ./dist directory to the appropriate paths on your
 web server.
+
+Note that a pre-built version of this file is hosted at static.opentok.com.
+Load both the CSS and JavaScript files (in addition to the OpenTok.js library):
+
+    <link rel="stylesheet" type="text/css"
+      href="https://static.opentok.com/hardware-setup/v1/css/opentok-hardware-setup.css">
+    <script
+      src="https://static.opentok.com/hardware-setup/v1/js/opentok-hardware-setup.js">
+  </script>
 
 Browserify
 ----------
@@ -56,26 +64,26 @@ To initialize the hardware set-up component, call the
 `createOpentokHardwareSetupComponent()` method. This method takes the following
 parameters:
 
-* `targetElement` — The DOM element in which to insert the hardware setup
+* `targetElement` -- The DOM element in which to insert the hardware setup
 component. (See the insertMode property of the next parameter, options.)
 
-* `options` — An optional argument that specifies how the component will be
+* `options` -- An optional argument that specifies how the component will be
 inserted in the HTML DOM, in relation to the targetElement parameter. You can
 set this parameter to one of the following values:
 
-  * "replace" — The component replaces contents of the targetElement. This is
+  * "replace" -- The component replaces contents of the targetElement. This is
 the default.
-  * "after" — The component is a new element inserted after the targetElement in
+  * "after" -- The component is a new element inserted after the targetElement in
 the HTML DOM. (Both the component and targetElement have the same parent
 element.)
-  * "before" — The component is a new element inserted before the targetElement
+  * "before" -- The component is a new element inserted before the targetElement
 in the HTML DOM. (Both the component and targetElement have the same parent
 element.)
-  * "append" — The component is a new element added as a child of the
+  * "append" -- The component is a new element added as a child of the
 targetElement. If there are other child elements, the component is appended as
 the last child element of the targetElement.
 
-* `completionHandler` — A function that is called is called when the component
+* `completionHandler` -- A function that is called is called when the component
 is rendered on the page or on error in calling to the method. Upon error, this
 function is passed an error object which has a `message` property, which can
 have one of the following values:
@@ -90,6 +98,25 @@ have one of the following values:
 The method returns a HardwareSetup object, which has the following methods:
 `audioSource()`, `videoSource()`, and `destroy()`.
 
+Example:
+
+    // Replace this with the ID of the target DOM element for the component
+    var element = document.querySelector('#hardware-setup');
+    
+    var options = {
+        insertMode: 'append' // Or use another insertMode setting.
+      };
+    
+    var component = createOpentokHardwareSetupComponent(element, options, function(error) {
+      if (error) {
+        console.error('Error: ', error);
+        element.innerHTML = '<strong>Error getting devices</strong>: '
+          error.message;
+        return;
+      }
+      // Add a button to call component.destroy() to close the component.
+    });
+
 ### HardwareSetup.audioSource()
 
 Returns an object representing the selected audio source. This object has a
@@ -97,6 +124,15 @@ Returns an object representing the selected audio source. This object has a
 store this string in a cookie for use in a future session. You can pass the
 audio source object or its `deviceId` property as a value for the `audioSource`
 property of the properties object passed into the `OT.initPublisher()` method.
+
+Example:
+
+    // component is the object returned by createOpentokHardwareSetupComponent()
+    var publisherOptions = {
+      audioSource: component.audioSource(),
+      videoSource: component.videoSource()
+    };
+    OT.initPublisher(targetElement, publisherOptions);
 
 ### HardwareSetup.videoSource()
 
@@ -106,10 +142,24 @@ store this string in a cookie for use in a future session. You can pass the
 video source object or its `deviceId` property as a value for the `videoSource`
 property of the properties object passed into the `OT.initPublisher()` method.
 
+Example:
+
+    // component is the object returned by createOpentokHardwareSetupComponent()
+    var publisherOptions = {
+      audioSource: component.audioSource(),
+      videoSource: component.videoSource()
+    };
+    OT.initPublisher(targetElement, publisherOptions);
+
 ### HardwareSetup.destroy()
 
 Closes the hardware setup component (if visible) and removes it from the
 HTML DOM.
+
+Example:
+
+    // component is the object returned by createOpentokHardwareSetupComponent()
+    component.destroy();
 
 Sample
 ------
