@@ -1,10 +1,36 @@
 opentok.js-hardware-setup
 =========================
 
+The OpenTok hardware set-up component provides a user interface for clients
+using the [OpenTok.js] [1] library to select the camera and microphone. The
+client can use the camera and microphone to publish a stream to an OpenTok.js
+session.
+
+Building the component
+----------------------
+
+This project uses [Node.js] [2] and [gulp] [3] to build the distribution
+versions of the component.
+
+Run the following to build the component:
+
+```npm install -g gulp
+npm install
+gulp
+```
+
+This creates a .js file that is useable with JavaScript module loaders and
+puts it in the ./dist directory, along with the .css file and a minified version
+of the .js file.
+
+Copy the files in the ./dist directory to the appropriate paths on your
+web server.
+
 Browserify
 ----------
 
-You can copy the CSS, in this example to `public/css/hardware-setup.css` automatically using NPM:
+You can copy the CSS in this example to `public/css/hardware-setup.css`
+automatically using NPM:
 
 ```json
 {
@@ -14,6 +40,81 @@ You can copy the CSS, in this example to `public/css/hardware-setup.css` automat
   }
 }
 ```
+
+Using the component
+-------------------
+
+Use the component along with the [OpenTok.js] [1] library.
+
+*Important restrictions:* Due to limitations in other browsers, the hardware
+set-up component is only available in Chrome. And it only works in sites loaded
+via HTTPS.
+
+### createOpentokHardwareSetupComponent()
+
+To initialize the hardware set-up component, call the
+`createOpentokHardwareSetupComponent()` method. This method takes the following
+parameters:
+
+* `targetElement` — The DOM element in which to insert the hardware setup
+component. (See the insertMode property of the next parameter, options.)
+
+* `options` — An optional argument that specifies how the component will be
+inserted in the HTML DOM, in relation to the targetElement parameter. You can
+set this parameter to one of the following values:
+
+  * "replace" — The component replaces contents of the targetElement. This is
+the default.
+  * "after" — The component is a new element inserted after the targetElement in
+the HTML DOM. (Both the component and targetElement have the same parent
+element.)
+  * "before" — The component is a new element inserted before the targetElement
+in the HTML DOM. (Both the component and targetElement have the same parent
+element.)
+  * "append" — The component is a new element added as a child of the
+targetElement. If there are other child elements, the component is appended as
+the last child element of the targetElement.
+
+* `completionHandler` — A function that is called is called when the component
+is rendered on the page or on error in calling to the method. Upon error, this
+function is passed an error object which has a `message` property, which can
+have one of the following values:
+
+  * "No element provided to place component"
+  * "This browser does not support getMediaDevices APIs"
+  * "There are no audio or video devices available".
+
+  When the component is rendered on the page successfully, the completion
+  handler is called with no error object.
+
+The method returns a HardwareSetup object, which has the following methods:
+`audioSource()`, `videoSource()`, and `destroy()`.
+
+### HardwareSetup.audioSource()
+
+Returns an object representing the selected audio source. This object has a
+`deviceId` property, which is the unique audio device ID (a string). You can
+store this string in a cookie for use in a future session. You can pass the
+audio source object or its `deviceId` property as a value for the `audioSource`
+property of the properties object passed into the `OT.initPublisher()` method.
+
+### HardwareSetup.videoSource()
+
+Returns an object representing the selected video source. This object has a
+`deviceId` property, which is the unique video device ID (a string). You can
+store this string in a cookie for use in a future session. You can pass the
+video source object or its `deviceId` property as a value for the `videoSource`
+property of the properties object passed into the `OT.initPublisher()` method.
+
+### HardwareSetup.destroy()
+
+Closes the hardware setup component (if visible) and removes it from the
+HTML DOM.
+
+Sample
+------
+
+See the index.html file in this repository for sample code.
 
 License
 -------
@@ -40,3 +141,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+
+[1]: https://tokbox.com/opentok/libraries/client/js/
+[2]: http://nodejs.org/
+[3]: http://gulpjs.com/
