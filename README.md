@@ -9,7 +9,7 @@ session.
 Building the component
 ----------------------
 
-This project uses [Node.js] [2] and [gulp] [3] to build the distribution
+This project uses [Node.js][2] and [gulp][3] to build the distribution
 versions of the component.
 
 Run the following to build the component:
@@ -28,11 +28,12 @@ web server.
 Note that a pre-built version of this file is hosted at static.opentok.com.
 Load both the CSS and JavaScript files (in addition to the OpenTok.js library):
 
-    <link rel="stylesheet" type="text/css"
-      href="https://static.opentok.com/hardware-setup/v1/css/opentok-hardware-setup.css">
-    <script
-      src="https://static.opentok.com/hardware-setup/v1/js/opentok-hardware-setup.js">
-  </script>
+```html
+<link rel="stylesheet" type="text/css"
+  href="https://static.opentok.com/hardware-setup/v1/css/opentok-hardware-setup.css">
+<script
+  src="https://static.opentok.com/hardware-setup/v1/js/opentok-hardware-setup.js"></script>
+```
 
 Browserify
 ----------
@@ -55,7 +56,7 @@ Using the component
 Use the component along with the [OpenTok.js] [1] library.
 
 *Important restrictions:* Due to limitations in other browsers, the hardware
-set-up component is only available in Chrome. And it only works in sites loaded
+set-up component is only available in Chrome and only works on sites loaded
 via HTTPS.
 
 ### createOpentokHardwareSetupComponent()
@@ -71,15 +72,15 @@ component. (See the insertMode property of the next parameter, options.)
 inserted in the HTML DOM, in relation to the targetElement parameter. You can
 set this parameter to one of the following values:
 
-  * "replace" -- The component replaces contents of the targetElement. This is
+  * `"replace"` -- The component replaces contents of the targetElement. This is
 the default.
-  * "after" -- The component is a new element inserted after the targetElement in
+  * `"after"` -- The component is a new element inserted after the targetElement in
 the HTML DOM. (Both the component and targetElement have the same parent
 element.)
-  * "before" -- The component is a new element inserted before the targetElement
+  * `"before"` -- The component is a new element inserted before the targetElement
 in the HTML DOM. (Both the component and targetElement have the same parent
 element.)
-  * "append" -- The component is a new element added as a child of the
+  * `"append"` -- The component is a new element added as a child of the
 targetElement. If there are other child elements, the component is appended as
 the last child element of the targetElement.
 
@@ -100,22 +101,24 @@ The method returns a HardwareSetup object, which has the following methods:
 
 Example:
 
-    // Replace this with the ID of the target DOM element for the component
-    var element = document.querySelector('#hardware-setup');
-    
-    var options = {
-        insertMode: 'append' // Or use another insertMode setting.
-      };
-    
-    var component = createOpentokHardwareSetupComponent(element, options, function(error) {
-      if (error) {
-        console.error('Error: ', error);
-        element.innerHTML = '<strong>Error getting devices</strong>: '
-          error.message;
-        return;
-      }
-      // Add a button to call component.destroy() to close the component.
-    });
+```javascript
+// Replace this with the ID of the target DOM element for the component
+var element = document.querySelector('#hardware-setup');
+
+var options = {
+  insertMode: 'append' // Or use another insertMode setting.
+};
+
+var component = createOpentokHardwareSetupComponent(element, options, function(error) {
+  if (error) {
+    console.error('Error: ', error);
+    element.innerHTML = '<strong>Error getting devices</strong>: '
+      error.message;
+    return;
+  }
+  // Add a button to call component.destroy() to close the component.
+});
+```
 
 ### HardwareSetup.audioSource()
 
@@ -127,12 +130,14 @@ property of the properties object passed into the `OT.initPublisher()` method.
 
 Example:
 
-    // component is the object returned by createOpentokHardwareSetupComponent()
-    var publisherOptions = {
-      audioSource: component.audioSource(),
-      videoSource: component.videoSource()
-    };
-    OT.initPublisher(targetElement, publisherOptions);
+```javascript
+// component is the object returned by createOpentokHardwareSetupComponent()
+var publisherOptions = {
+  audioSource: component.audioSource(),
+  videoSource: component.videoSource()
+};
+OT.initPublisher(targetElement, publisherOptions);
+```
 
 ### HardwareSetup.videoSource()
 
@@ -144,12 +149,14 @@ property of the properties object passed into the `OT.initPublisher()` method.
 
 Example:
 
-    // component is the object returned by createOpentokHardwareSetupComponent()
-    var publisherOptions = {
-      audioSource: component.audioSource(),
-      videoSource: component.videoSource()
-    };
-    OT.initPublisher(targetElement, publisherOptions);
+```javascript
+// component is the object returned by createOpentokHardwareSetupComponent()
+var publisherOptions = {
+  audioSource: component.audioSource(),
+  videoSource: component.videoSource()
+};
+OT.initPublisher(targetElement, publisherOptions);
+```
 
 ### HardwareSetup.destroy()
 
@@ -158,8 +165,10 @@ HTML DOM.
 
 Example:
 
-    // component is the object returned by createOpentokHardwareSetupComponent()
-    component.destroy();
+```javascript
+// component is the object returned by createOpentokHardwareSetupComponent()
+component.destroy();
+```
 
 Sample
 ------
