@@ -20,13 +20,13 @@ gulp.task('default', function() {
         return 'createOpentokHardwareSetupComponent'
       }
     }))
-    .pipe(gulp.dest('dist/'))
+    .pipe(gulp.dest('dist/js/'))
     .pipe(uglify())
     .pipe(rename({ extname: '.min.js' }))
-    .pipe(gulp.dest('dist/'));
+    .pipe(gulp.dest('dist/js/'));
 
   var css = gulp.src('css/*.css')
-    .pipe(gulp.dest('dist/'));
+    .pipe(gulp.dest('dist/css/'));
 
   return merge(js, css);
 });
