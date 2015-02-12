@@ -1,5 +1,5 @@
 OpenTok Hardware Setup
-=================================
+======================
 
 The OpenTok Hardware Setup component provides a user interface for clients
 using the [OpenTok.js] [1] library to select the camera and microphone. The
