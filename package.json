@@ -10,11 +10,11 @@
   "author": "Tokbox <support@tokbox.com>",
   "license": "MIT",
   "lib": "js",
-  "main": "./js/hardware-setup.js",
+  "main": "./js/opentok-hardware-setup.js",
   "repository": "git://github.com/opentok/opentok.js-hardware-setup.git",
   "browserify": {
     "dependencies": "",
-    "main": "js/hardware-setup.js"
+    "main": "js/opentok-hardware-setup.js"
   },
   "dependencies": {},
   "devDependencies": {
