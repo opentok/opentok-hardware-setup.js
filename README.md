@@ -1,7 +1,7 @@
-OpenTok hardware set-up component
+OpenTok Hardware Setup
 =================================
 
-The OpenTok hardware set-up component provides a user interface for clients
+The OpenTok Hardware Setup component provides a user interface for clients
 using the [OpenTok.js] [1] library to select the camera and microphone. The
 client can use the camera and microphone to publish a stream to an OpenTok.js
 session.
@@ -55,13 +55,13 @@ Using the component
 
 Use the component along with the [OpenTok.js] [1] library.
 
-*Important restrictions:* Due to limitations in other browsers, the hardware
-set-up component is only available in Chrome and only works on sites loaded
+*Important restrictions:* Due to limitations in other browsers, the Hardware Setup 
+component is only available in Chrome and only works on sites loaded
 via HTTPS.
 
 ### createOpentokHardwareSetupComponent()
 
-To initialize the hardware set-up component, call the
+To initialize the Hardware Setup component, call the
 `createOpentokHardwareSetupComponent()` method. This method takes the following
 parameters:
 
