@@ -43,9 +43,9 @@ automatically using NPM:
 
 ```json
 {
-  "dependencies":{"opentok.js-hardware-setup":"~1.0.0"},
+  "dependencies":{"opentok-hardware-setup.js":"~1.0.0"},
   "scripts":{
-    "postinstall":"cp -r node_modules/opentok.js-hardware-setup/css/hardware-setup.css public/css/hardware-setup.css"
+    "postinstall":"cp -r node_modules/opentok-hardware-setup.js/css/opentok-hardware-setup.css public/css/opentok-hardware-setup.css"
   }
 }
 ```
