@@ -18,7 +18,7 @@ describe('opentok.js hardware setup component', function() {
 
       });
 
-      it('callsback with an error if no element and no options are provided', function(done) {
+      it('calls back with an error if no element and no options are provided', function(done) {
 
         createOpentokHardwareSetupComponent(null, function(err) {
           expect(err).toEqual(new Error('No element provided to place component'));
@@ -27,9 +27,18 @@ describe('opentok.js hardware setup component', function() {
 
       });
 
-      it('callsback with an error if no element is provided', function(done) {
+      it('calls back with an error if no element is provided', function(done) {
 
         createOpentokHardwareSetupComponent(null, {}, function(err) {
+          expect(err).toEqual(new Error('No element provided to place component'));
+          done();
+        });
+
+      });
+
+      it('calls back with an error if element is not found', function(done) {
+
+        createOpentokHardwareSetupComponent('elementThatDoesntExist', {}, function(err) {
           expect(err).toEqual(new Error('No element provided to place component'));
           done();
         });
@@ -44,75 +53,86 @@ describe('opentok.js hardware setup component', function() {
         spyOn(window, 'authenticateForDeviceLabels');
       });
 
+      var createSubDiv = function(innerHTML) {
+        var container = document.createElement('div');
+        var element = document.createElement('div');
+        container.appendChild(element);
+
+        if (innerHTML) {
+          element.innerHTML = innerHTML;
+        }
+
+        return element;
+      };
+
+      var checkElementSetupCorrectly = function(el) {
+        expect(el).not.toEqual(undefined);
+        expect(el).not.toEqual(null);
+        expect(el.className).toEqual('opentok-hardware-setup opentok-hardware-setup-loading');
+      };
+
       it('defaults to replace', function() {
 
-        var domElement = document.createElement('div');
-        domElement.innerHTML = 'testing content';
-        createOpentokHardwareSetupComponent(domElement, function() {});
+        var element = createSubDiv('testing content');
+        createOpentokHardwareSetupComponent(element, function() {});
         expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
-        expect(domElement.innerHTML).not.toEqual('testing content');
-        expect(domElement.className).toEqual('opentok-hardware-setup ' +
-          'opentok-hardware-setup-loading');
+        expect(element.innerHTML).not.toEqual('testing content');
+        checkElementSetupCorrectly(element);
+
+      });
+
+      it('works with id instead of element', function() {
+
+        var element = createSubDiv('testing content');
+        element.setAttribute('id', 'elementInWorksWithIdInsteadOfElement');
+        document.body.appendChild(element.parentNode);
+
+        createOpentokHardwareSetupComponent('elementInWorksWithIdInsteadOfElement', function() {});
+
+        expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
+        expect(element.innerHTML).not.toEqual('testing content');
+        checkElementSetupCorrectly(element);
+        document.body.removeChild(element.parentNode);
 
       });
 
       it('inserts before', function() {
 
-        var domElement = document.createElement('div'),
-            child = document.createElement('div');
-        domElement.appendChild(child);
-        child.innerHTML = 'testing content';
-        createOpentokHardwareSetupComponent(child, { insertMode: 'before' }, function() {});
+        var element = createSubDiv('testing content');
+        createOpentokHardwareSetupComponent(element, { insertMode: 'before' }, function() {});
         expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
-        expect(child.innerHTML).toEqual('testing content');
-        expect(child.previousSibling).not.toEqual(undefined);
-        expect(child.previousSibling).not.toEqual(null);
-        expect(child.previousSibling.className).toEqual('opentok-hardware-setup ' +
-          'opentok-hardware-setup-loading');
+        expect(element.innerHTML).toEqual('testing content');
+        checkElementSetupCorrectly(element.previousSibling);
 
       });
 
       it('inserts after', function() {
 
-        var domElement = document.createElement('div'),
-            child = document.createElement('div');
-        domElement.appendChild(child);
-        child.innerHTML = 'testing content';
-        createOpentokHardwareSetupComponent(child, { insertMode: 'after' }, function() {});
+        var element = createSubDiv('testing content');
+        createOpentokHardwareSetupComponent(element, { insertMode: 'after' }, function() {});
         expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
-        expect(child.innerHTML).toEqual('testing content');
-        expect(child.nextSibling).not.toEqual(undefined);
-        expect(child.nextSibling).not.toEqual(null);
-        expect(child.nextSibling.className).toEqual('opentok-hardware-setup ' +
-          'opentok-hardware-setup-loading');
+        expect(element.innerHTML).toEqual('testing content');
+        checkElementSetupCorrectly(element.nextSibling);
 
       });
 
       it('appends', function() {
 
-        var domElement = document.createElement('div'),
-            child = document.createElement('div');
-        domElement.appendChild(child);
-        child.innerHTML = 'testing content';
-        createOpentokHardwareSetupComponent(domElement, { insertMode: 'append' }, function() {});
+        var element = createSubDiv('testing content');
+        createOpentokHardwareSetupComponent(element.parentNode, { insertMode: 'append' }, function() {});
         expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
-        expect(child.innerHTML).toEqual('testing content');
-        expect(child.nextSibling).not.toEqual(undefined);
-        expect(child.nextSibling).not.toEqual(null);
-        expect(child.nextSibling.className).toEqual('opentok-hardware-setup ' +
-          'opentok-hardware-setup-loading');
+        expect(element.innerHTML).toEqual('testing content');
+        checkElementSetupCorrectly(element.nextSibling);
 
       });
 
       it('replaces', function() {
 
-        var domElement = document.createElement('div');
-        domElement.innerHTML = 'testing content';
-        createOpentokHardwareSetupComponent(domElement, { insertMode: 'replace' }, function() {});
+        var element = createSubDiv('testing content');
+        createOpentokHardwareSetupComponent(element, { insertMode: 'replace' }, function() {});
         expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
-        expect(domElement.innerHTML).not.toEqual('testing content');
-        expect(domElement.className).toEqual('opentok-hardware-setup ' +
-          'opentok-hardware-setup-loading');
+        expect(element.innerHTML).not.toEqual('testing content');
+        checkElementSetupCorrectly(element);
 
       });
 
@@ -121,7 +141,7 @@ describe('opentok.js hardware setup component', function() {
     describe('authenticateForDeviceLabels', function() {
 
       it('calls authenticateForDeviceLabels', function() {
-        
+
         var authenticateCallback;
         spyOn(window, 'authenticateForDeviceLabels')
           .and.callFake(function(cb) {
@@ -132,7 +152,7 @@ describe('opentok.js hardware setup component', function() {
         createOpentokHardwareSetupComponent(domElement, function() {});
         expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
         expect(authenticateCallback).toEqual(jasmine.any(Function));
-        
+
       });
 
       it('calls the completion handler with an error if an authenticateForDeviceLabels ' +
