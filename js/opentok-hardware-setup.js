@@ -295,6 +295,10 @@ var authenticateForDeviceLabels = function(callback) {
 
 function createOpentokHardwareSetupComponent(targetElement, options, callback) {
 
+  if (typeof targetElement === 'string') {
+    targetElement = document.getElementById(targetElement);
+  }
+
   var _hardwareSetup = {},
       _options,
       state = 'getDevices',
