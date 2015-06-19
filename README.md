@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/opentok/opentok-hardware-setup.js.svg)](https://travis-ci.org/opentok/opentok-hardware-setup.js)
+
 OpenTok Hardware Setup
 ======================
 
