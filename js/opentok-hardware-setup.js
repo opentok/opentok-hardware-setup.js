@@ -463,5 +463,5 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
 
   return _hardwareSetup;
 
-};
+}
 
