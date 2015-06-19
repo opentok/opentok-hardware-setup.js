@@ -21,6 +21,7 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "codeclimate-test-reporter": "0.0.4",
     "gulp": "^3.8.10",
     "gulp-rename": "^1.2.0",
     "gulp-serve": "^0.3.0",
