@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/opentok/opentok-hardware-setup.js.svg)](https://travis-ci.org/opentok/opentok-hardware-setup.js)
+[![Test Coverage](https://codeclimate.com/github/opentok/opentok-hardware-setup.js/badges/coverage.svg)](https://codeclimate.com/github/opentok/opentok-hardware-setup.js/coverage)
 
 OpenTok Hardware Setup
 ======================
