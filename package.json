@@ -17,7 +17,7 @@
     "main": "js/opentok-hardware-setup.js"
   },
   "scripts": {
-    "test": "node node_modules/karma/bin/karma start karma.conf.js --single-run --browsers Firefox"
+    "test": "node node_modules/karma/bin/karma start karma.conf.js --single-run --browsers PhantomJS"
   },
   "dependencies": {},
   "devDependencies": {
@@ -32,6 +32,8 @@
     "karma-coverage": "^0.4.2",
     "karma-firefox-launcher": "^0.1.6",
     "karma-jasmine": "^0.3.5",
-    "merge-stream": "^0.1.6"
+    "karma-phantomjs-launcher": "^0.2.0",
+    "merge-stream": "^0.1.6",
+    "phantomjs": "^1.9.17"
   }
 }
