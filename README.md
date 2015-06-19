@@ -6,6 +6,11 @@ using the [OpenTok.js] [1] library to select the camera and microphone. The
 client can use the camera and microphone to publish a stream to an OpenTok.js
 session.
 
+Demo
+----
+
+You can see the component running [here](https://opentok.github.io/opentok-hardware-setup.js/).
+
 Building the component
 ----------------------
 
