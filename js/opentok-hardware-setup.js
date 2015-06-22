@@ -241,6 +241,10 @@ var createDevicePickerController = function(opts, changeHandler) {
   return _devicePicker;
 };
 
+var getWindowLocationProtocol = function() {
+  return window.location.protocol;
+};
+
 var shouldGetDevices = function(callback) {
   OT.getDevices(function(error, devices) {
     if (error) {
@@ -258,6 +262,15 @@ var shouldGetDevices = function(callback) {
   });
 };
 
+var getUserMedia;
+if (navigator.getUserMedia) {
+  getUserMedia = navigator.getUserMedia.bind(navigator);
+} else if (navigator.mozGetUserMedia) {
+  getUserMedia = navigator.mozGetUserMedia.bind(navigator);
+} else if (navigator.webkitGetUserMedia) {
+  getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
+}
+
 var authenticateForDeviceLabels = function(callback) {
   shouldGetDevices(function(error, constraints) {
     if (error) {
@@ -266,17 +279,10 @@ var authenticateForDeviceLabels = function(callback) {
       if (constraints.video === false && constraints.audio === false) {
         callback(new Error('There are no audio or video devices available'));
       } else {
-        if (window.location.protocol === 'http:') {
+        if (getWindowLocationProtocol() === 'http:') {
           callback();
         } else {
-          var getUserMedia;
-          if (navigator.getUserMedia) {
-            getUserMedia = navigator.getUserMedia.bind(navigator);
-          } else if (navigator.mozGetUserMedia) {
-            getUserMedia = navigator.mozGetUserMedia.bind(navigator);
-          } else if (navigator.webkitGetUserMedia) {
-            getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
-          } else {
+          if (!getUserMedia) {
             return callback(new Error('getUserMedia not supported in this browser'));
           }
           getUserMedia(constraints, function(stream) {

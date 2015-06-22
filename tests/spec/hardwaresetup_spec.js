@@ -3,7 +3,10 @@
 describe('opentok.js hardware setup component', function() {
 
   beforeEach(function() {
-    window.OT = { getDevices: function() {}, initPublisher: function() {} };
+    window.OT = {
+      getDevices: function() {},
+      initPublisher: function() {}
+    };
   });
 
   describe('createOpentokHardwareSetupComponent', function() {
@@ -99,7 +102,9 @@ describe('opentok.js hardware setup component', function() {
       it('inserts before', function() {
 
         var element = createSubDiv('testing content');
-        createOpentokHardwareSetupComponent(element, { insertMode: 'before' }, function() {});
+        createOpentokHardwareSetupComponent(element, {
+          insertMode: 'before'
+        }, function() {});
         expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
         expect(element.innerHTML).toEqual('testing content');
         checkElementSetupCorrectly(element.previousSibling);
@@ -109,7 +114,9 @@ describe('opentok.js hardware setup component', function() {
       it('inserts after', function() {
 
         var element = createSubDiv('testing content');
-        createOpentokHardwareSetupComponent(element, { insertMode: 'after' }, function() {});
+        createOpentokHardwareSetupComponent(element, {
+          insertMode: 'after'
+        }, function() {});
         expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
         expect(element.innerHTML).toEqual('testing content');
         checkElementSetupCorrectly(element.nextSibling);
@@ -119,7 +126,10 @@ describe('opentok.js hardware setup component', function() {
       it('appends', function() {
 
         var element = createSubDiv('testing content');
-        createOpentokHardwareSetupComponent(element.parentNode, { insertMode: 'append' }, function() {});
+        createOpentokHardwareSetupComponent(element.parentNode, {
+            insertMode: 'append'
+          },
+          function() {});
         expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
         expect(element.innerHTML).toEqual('testing content');
         checkElementSetupCorrectly(element.nextSibling);
@@ -129,7 +139,9 @@ describe('opentok.js hardware setup component', function() {
       it('replaces', function() {
 
         var element = createSubDiv('testing content');
-        createOpentokHardwareSetupComponent(element, { insertMode: 'replace' }, function() {});
+        createOpentokHardwareSetupComponent(element, {
+          insertMode: 'replace'
+        }, function() {});
         expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
         expect(element.innerHTML).not.toEqual('testing content');
         checkElementSetupCorrectly(element);
@@ -138,9 +150,37 @@ describe('opentok.js hardware setup component', function() {
 
     });
 
+    describe('destroy', function() {
+      var camera, microphone;
+      beforeEach(function() {
+        spyOn(window, 'createDevicePickerController').and.callFake(function() {
+          if (!camera) {
+            camera = jasmine.createSpyObj('camera', ['cleanup', 'setLoading']);
+            return camera;
+          } else {
+            microphone = jasmine.createSpyObj('microphone', ['cleanup', 'setLoading']);
+            return microphone;
+          }
+        });
+        spyOn(window, 'authenticateForDeviceLabels').and.callFake(function(cb) {
+          cb();
+        });
+      });
+
+      it('calls cleanup on the camera and microphone', function() {
+        var domElement = document.createElement('div');
+        var component = createOpentokHardwareSetupComponent(domElement, function() {});
+        component.destroy();
+        expect(camera).toBeDefined();
+        expect(microphone).toBeDefined();
+        expect(camera.cleanup).toHaveBeenCalled();
+        expect(microphone.cleanup).toHaveBeenCalled();
+      });
+    });
+
     describe('authenticateForDeviceLabels', function() {
 
-      it('calls authenticateForDeviceLabels', function() {
+      it('gets called with a callback function', function() {
 
         var authenticateCallback;
         spyOn(window, 'authenticateForDeviceLabels')
@@ -158,27 +198,201 @@ describe('opentok.js hardware setup component', function() {
       it('calls the completion handler with an error if an authenticateForDeviceLabels ' +
         'returns an error', function() {
 
-        var error = new Error('authenticateForDeviceLabels error');
-        spyOn(window, 'authenticateForDeviceLabels')
-          .and.callFake(function(cb) {
-            cb(error);
+          var error = new Error('authenticateForDeviceLabels error');
+          spyOn(window, 'authenticateForDeviceLabels')
+            .and.callFake(function(cb) {
+              cb(error);
+            });
+
+          var completionHandler = jasmine.createSpy('completionHandler');
+
+          var domElement = document.createElement('div');
+          createOpentokHardwareSetupComponent(domElement, completionHandler);
+          expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
+          expect(completionHandler).toHaveBeenCalledWith(error);
+        });
+
+      it('calls getDevices', function() {
+        spyOn(OT, 'getDevices').and.callThrough();
+        spyOn(window, 'authenticateForDeviceLabels').and.callThrough();
+        var domElement = document.createElement('div');
+        createOpentokHardwareSetupComponent(domElement, function() {});
+        expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
+        expect(OT.getDevices).toHaveBeenCalled();
+      });
+
+      it('passes through getDevices errors', function(done) {
+        var mockError = new Error('Mock Error');
+        spyOn(OT, 'getDevices').and.callFake(function(cb) {
+          cb(mockError);
+        });
+        var domElement = document.createElement('div');
+        createOpentokHardwareSetupComponent(domElement, function(err) {
+          expect(err).toBe(mockError);
+          done();
+        });
+      });
+
+      it('calls the completion handler with an error for no audio or video devices',
+        function(done) {
+          spyOn(OT, 'getDevices').and.callFake(function(cb) {
+            cb(undefined, []);
+          });
+          var domElement = document.createElement('div');
+          createOpentokHardwareSetupComponent(domElement, function(err) {
+            expect(err).toBeDefined();
+            expect(err.message).toBe('There are no audio or video devices available');
+            done();
+          });
+        });
+
+      describe('on http: with audio and video devices', function() {
+        beforeEach(function() {
+          spyOn(window, 'getWindowLocationProtocol').and.callFake(function() {
+            return 'http:';
+          });
+          spyOn(OT, 'initPublisher')
+            .and.callFake(function() {
+              var obj = {
+                on: function() {},
+                destroy: function() {}
+              };
+              return obj;
+            });
+          spyOn(OT, 'getDevices').and.callFake(function(cb) {
+            cb(undefined, [{
+              kind: 'audioInput',
+              deviceId: 'mockDeviceId'
+            }, {
+              kind: 'videoInput',
+              deviceId: 'mockDeviceId'
+            }]);
+          });
+        });
+
+        it('calls back with no error',
+          function(done) {
+            var domElement = document.createElement('div');
+            createOpentokHardwareSetupComponent(domElement, function(err) {
+              expect(err).not.toBeDefined();
+              done();
+            });
+          });
+      });
+
+      describe('on https:', function() {
+        beforeEach(function() {
+          spyOn(window, 'getWindowLocationProtocol').and.callFake(function() {
+            return 'https:';
+          });
+          spyOn(OT, 'initPublisher')
+            .and.callFake(function() {
+              var obj = {
+                on: function() {},
+                destroy: function() {}
+              };
+              return obj;
+            });
+        });
+
+        describe('with audio and video devices', function() {
+          beforeEach(function() {
+            spyOn(OT, 'getDevices').and.callFake(function(cb) {
+              cb(undefined, [{
+                kind: 'audioInput',
+                deviceId: 'mockDeviceId'
+              }, {
+                kind: 'videoInput',
+                deviceId: 'mockDeviceId'
+              }]);
+            });
           });
 
-        var completionHandler = jasmine.createSpy('completionHandler');
+          it('calls getUserMedia with the right constraints', function(done) {
+            window.getUserMedia = function(constraints) {
+              expect(constraints.audio).toBe(true);
+              expect(constraints.video).toBe(true);
+              done();
+            };
+            var domElement = document.createElement('div');
+            createOpentokHardwareSetupComponent(domElement, function() {});
+          });
 
-        var domElement = document.createElement('div');
-        createOpentokHardwareSetupComponent(domElement, completionHandler);
-        expect(window.authenticateForDeviceLabels).toHaveBeenCalled();
-        expect(completionHandler).toHaveBeenCalledWith(error);
+          it('calls the completion handler with an error for no getUserMedia function',
+            function(done) {
+              window.getUserMedia = undefined;
+
+              spyOn(window, 'authenticateForDeviceLabels').and.callThrough();
+              var domElement = document.createElement('div');
+              createOpentokHardwareSetupComponent(domElement, function(err) {
+                expect(err).toBeDefined();
+                expect(err.message).toBe('getUserMedia not supported in this browser');
+                done();
+              });
+            });
+
+          it('calls the completion handler with an error for getUserMedia errors', function(done) {
+            window.getUserMedia = function(constraints, success, failure) {
+              failure({
+                name: 'PermissionDeniedError'
+              });
+            };
+            spyOn(window, 'authenticateForDeviceLabels').and.callThrough();
+            var domElement = document.createElement('div');
+            createOpentokHardwareSetupComponent(domElement, function(err) {
+              expect(err).toBeDefined();
+              expect(err.message).toBe('End-user denied permission to hardware devices');
+              done();
+            });
+          });
+
+          it('calls stream.stop and the callback when getUserMedia completes', function(done) {
+            var mockStream = jasmine.createSpyObj('stream', ['stop']);
+            window.getUserMedia = function(constraints, success, failure) {
+              success(mockStream);
+            };
+            spyOn(window, 'authenticateForDeviceLabels').and.callThrough();
+            var domElement = document.createElement('div');
+            createOpentokHardwareSetupComponent(domElement, function(err) {
+              expect(err).not.toBeDefined();
+              expect(mockStream.stop).toHaveBeenCalled();
+              done();
+            });
+          });
+        });
+
+        describe('with only audio devices', function() {
+          beforeEach(function() {
+            spyOn(OT, 'getDevices').and.callFake(function(cb) {
+              cb(undefined, [{
+                kind: 'audioInput',
+                deviceId: 'mockDeviceId'
+              }]);
+            });
+          });
+
+          it('calls getUserMedia with the right constraints', function(done) {
+            window.getUserMedia = function(constraints) {
+              expect(constraints.audio).toBe(true);
+              expect(constraints.video).toBe(false);
+              done();
+            };
+            var domElement = document.createElement('div');
+            createOpentokHardwareSetupComponent(domElement, function() {});
+          });
+        });
       });
 
     });
 
 
+
     it('creates device pickers', function() {
 
       spyOn(window, 'authenticateForDeviceLabels')
-        .and.callFake(function(cb) { cb(); });
+        .and.callFake(function(cb) {
+          cb();
+        });
 
       var camera, microphone;
 
@@ -224,66 +438,77 @@ describe('opentok.js hardware setup component', function() {
       it('calls the completion handler with an error if getDevices ' +
         'returns an error', function() {
 
-        spyOn(window, 'authenticateForDeviceLabels')
-          .and.callFake(function(cb) { cb(); });
+          spyOn(window, 'authenticateForDeviceLabels')
+            .and.callFake(function(cb) {
+              cb();
+            });
 
-        spyOn(window, 'createDevicePickerController')
-        .and.callFake(function(opts) {
-          return {
-            setLoading: function() {}
-          };
+          spyOn(window, 'createDevicePickerController')
+            .and.callFake(function() {
+              return {
+                setLoading: function() {}
+              };
+            });
+
+          var error = new Error('getDevices error');
+
+          spyOn(OT, 'getDevices')
+            .and.callFake(function(cb) {
+              cb(error);
+            });
+
+          var completionHandler = jasmine.createSpy('completionHandler');
+
+          var domElement = document.createElement('div');
+          createOpentokHardwareSetupComponent(domElement, completionHandler);
+
+          expect(completionHandler).toHaveBeenCalledWith(error);
+
         });
-
-        var error = new Error('getDevices error');
-
-        spyOn(OT, 'getDevices')
-          .and.callFake(function(cb) {
-            cb(error);
-          });
-
-        var completionHandler = jasmine.createSpy('completionHandler');
-
-        var domElement = document.createElement('div');
-        createOpentokHardwareSetupComponent(domElement, completionHandler);
-
-        expect(completionHandler).toHaveBeenCalledWith(error);
-
-      });
 
       it('calls picker.setDeviceList', function() {
 
         spyOn(window, 'authenticateForDeviceLabels')
-          .and.callFake(function(cb) { cb(); });
+          .and.callFake(function(cb) {
+            cb();
+          });
 
         var camera, microphone;
         spyOn(window, 'createDevicePickerController')
-        .and.callFake(function(opts) {
-          var fake = {
-            setLoading: function() {},
-            setDeviceList: jasmine.createSpy('createDevicePickerController.setDeviceList')
-              .and.callFake(function(devices) {
-                fake.devices = devices;
-              })
-          };
-          if (opts.mode === 'videoSource') {
-            camera = fake;
-          } else {
-            microphone = fake;
-          }
-          return fake;
-        });
-
-        var error = new Error('getDevices error');
+          .and.callFake(function(opts) {
+            var fake = {
+              setLoading: function() {},
+              setDeviceList: jasmine.createSpy('createDevicePickerController.setDeviceList')
+                .and.callFake(function(devices) {
+                  fake.devices = devices;
+                })
+            };
+            if (opts.mode === 'videoSource') {
+              camera = fake;
+            } else {
+              microphone = fake;
+            }
+            return fake;
+          });
 
         spyOn(OT, 'getDevices')
           .and.callFake(function(cb) {
-            cb(undefined, [
-              { kind: 'videoInput', id: 1 },
-              { kind: 'videoInput', id: 2 },
-              { kind: 'audioInput', id: 1 },
-              { kind: 'audioInput', id: 2 },
-              { kind: 'audioInput', id: 3 }
-            ]);
+            cb(undefined, [{
+              kind: 'videoInput',
+              id: 1
+            }, {
+              kind: 'videoInput',
+              id: 2
+            }, {
+              kind: 'audioInput',
+              id: 1
+            }, {
+              kind: 'audioInput',
+              id: 2
+            }, {
+              kind: 'audioInput',
+              id: 3
+            }]);
           });
 
         var completionHandler = jasmine.createSpy('completionHandler');
@@ -294,17 +519,24 @@ describe('opentok.js hardware setup component', function() {
         expect(completionHandler).toHaveBeenCalledWith(undefined, component);
 
         expect(camera.setDeviceList).toHaveBeenCalledWith(jasmine.any(Array));
-        expect(camera.devices).toEqual([
-              { kind: 'videoInput', id: 1 },
-              { kind: 'videoInput', id: 2 }
-        ]);
+        expect(camera.devices).toEqual([{
+          kind: 'videoInput',
+          id: 1
+        }, {
+          kind: 'videoInput',
+          id: 2
+        }]);
         expect(microphone.setDeviceList).toHaveBeenCalledWith(jasmine.any(Array));
-        expect(microphone.devices).toEqual([
-              { kind: 'audioInput', id: 1 },
-              { kind: 'audioInput', id: 2 },
-              { kind: 'audioInput', id: 3 }
-        ]);
-
+        expect(microphone.devices).toEqual([{
+          kind: 'audioInput',
+          id: 1
+        }, {
+          kind: 'audioInput',
+          id: 2
+        }, {
+          kind: 'audioInput',
+          id: 3
+        }]);
       });
 
     });
@@ -390,15 +622,23 @@ describe('opentok.js hardware setup component', function() {
           }, function() {});
 
           spyOn(OT, 'initPublisher')
-            .and.callFake(function(tag, options) {
-              var obj = { on: function() {}, destroy: function() {} };
+            .and.callFake(function() {
+              var obj = {
+                on: function() {},
+                destroy: function() {}
+              };
               return obj;
             });
 
-          picker.setDeviceList([
-            { kind: 'videoInput', label: 'Device 1', deviceId: 'DEVICE1' },
-            { kind: 'videoInput', label: 'Device 2', deviceId: 'DEVICE2' }
-          ]);
+          picker.setDeviceList([{
+            kind: 'videoInput',
+            label: 'Device 1',
+            deviceId: 'DEVICE1'
+          }, {
+            kind: 'videoInput',
+            label: 'Device 2',
+            deviceId: 'DEVICE2'
+          }]);
 
         });
 

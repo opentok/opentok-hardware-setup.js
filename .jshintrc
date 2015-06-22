@@ -2,7 +2,8 @@
   "globals": {
     "TB": true,
     "OT": true,
-    "TBPlugin": true
+    "TBPlugin": true,
+    "createDevicePickerController": true
   },
   "globalstrict": true,
   "node": true,
