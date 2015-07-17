@@ -253,10 +253,10 @@ var shouldGetDevices = function(callback) {
     }
     callback(undefined, {
       audio: devices.some(function(device) {
-        return device.kind === 'audioInput';
+        return device.kind.toLowerCase() === 'audioinput';
       }),
       video: devices.some(function(device) {
-        return device.kind === 'videoInput';
+        return device.kind.toLowerCase() === 'videoinput';
       })
     });
   });
@@ -451,11 +451,11 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
         ]));
 
         camera.setDeviceList(devices.filter(function(device) {
-          return device.kind === 'videoInput';
+          return device.kind.toLowerCase() === 'videoinput';
         }));
 
         microphone.setDeviceList(devices.filter(function(device) {
-          return device.kind === 'audioInput';
+          return device.kind.toLowerCase() === 'audioinput';
         }));
 
         state = 'chooseDevices';
