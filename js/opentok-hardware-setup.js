@@ -147,6 +147,7 @@ var createDevicePickerController = function(opts, changeHandler) {
 
       opts.previewTag.appendChild(widgetTag);
       opts.previewTag.appendChild(audioDisplayParent);
+
     }
 
     var pub = OT.initPublisher(widgetTag, settings);
@@ -450,12 +451,12 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
           micPreview
         ]));
 
-        camera.setDeviceList(devices.filter(function(device) {
-          return device.kind === 'videoInput';
-        }));
-
         microphone.setDeviceList(devices.filter(function(device) {
           return device.kind === 'audioInput';
+        }));
+
+        camera.setDeviceList(devices.filter(function(device) {
+          return device.kind === 'videoInput';
         }));
 
         state = 'chooseDevices';
