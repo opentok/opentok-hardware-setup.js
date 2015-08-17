@@ -1,6 +1,5 @@
 .opentok-hardware-setup,
 .opentok-hardware-setup * {
-    color: #ffffff;
     margin: 0;
     padding: 0;
     border: 0;
@@ -46,6 +45,7 @@
 }
 
 .opentok-hardware-setup .opentok-hardware-setup-label {
+  color: #ffffff;
   float: left;
   width: 90px;
   padding-right: 10px;
