@@ -390,6 +390,7 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
       targetElement.setAttribute('id', container.getAttribute('id'));
     }
     for(var key in container.style) {
+      if (!container.style.hasOwnProperty(key)) { continue; }
       targetElement.style[key] = container.style[key];
     }
     while(container.childNodes.length > 0) {
