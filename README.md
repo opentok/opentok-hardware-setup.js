@@ -63,8 +63,7 @@ Using the component
 
 Use the component along with the [OpenTok.js] [1] library.
 
-*Important restrictions:* Due to limitations in other browsers, the Hardware Setup 
-component is only available in Chrome and only works on sites loaded
+*Important restriction:* The Hardware Setup component is only available on sites loaded
 via HTTPS.
 
 ### createOpentokHardwareSetupComponent()
