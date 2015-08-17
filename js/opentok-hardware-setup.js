@@ -269,6 +269,8 @@ if (navigator.getUserMedia) {
   getUserMedia = navigator.mozGetUserMedia.bind(navigator);
 } else if (navigator.webkitGetUserMedia) {
   getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
+} else if (OTPlugin.getUserMedia) {
+  getUserMedia = OTPlugin.getUserMedia.bind(OTPlugin);
 }
 
 var authenticateForDeviceLabels = function(callback) {
