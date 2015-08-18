@@ -7,6 +7,9 @@ describe('opentok.js hardware setup component', function() {
       getDevices: function() {},
       initPublisher: function() {}
     };
+    window.OTPlugin = {
+      getUserMedia: function() {}
+    };
   });
 
   describe('createOpentokHardwareSetupComponent', function() {
