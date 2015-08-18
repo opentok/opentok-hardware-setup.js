@@ -270,8 +270,8 @@ if (navigator.getUserMedia) {
   getUserMedia = navigator.mozGetUserMedia.bind(navigator);
 } else if (navigator.webkitGetUserMedia) {
   getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
-} else if (OTPlugin && OTPlugin.getUserMedia) {
-  getUserMedia = OTPlugin.getUserMedia.bind(OTPlugin);
+} else if (window.OTPlugin && window.OTPlugin.getUserMedia) {
+  getUserMedia = window.OTPlugin.getUserMedia.bind(window.OTPlugin);
 }
 
 var authenticateForDeviceLabels = function(callback) {
