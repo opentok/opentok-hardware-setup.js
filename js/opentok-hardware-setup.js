@@ -286,15 +286,14 @@ var authenticateForDeviceLabels = function(callback) {
             return callback(new Error('getUserMedia not supported in this browser'));
           }
           getUserMedia(constraints, function(stream) {
-            if (stream.stop) {
-                // Older spec
-                stream.stop();
-            } else {
-                // Newer spec
-                var tracks = stream.getAudioTracks().concat(stream.getVideoTracks());
-                tracks.forEach(function(track) {
-                  track.stop();
-                });
+            if (window.MediaStreamTrack && window.MediaStreamTrack.prototype.stop) {
+              var tracks = stream.getTracks();
+              tracks.forEach(function(track) {
+                track.stop();
+              });
+            } else if (stream.stop) {
+             // older spec
+             stream.stop();
             }
             callback();
           }, function(error) {
