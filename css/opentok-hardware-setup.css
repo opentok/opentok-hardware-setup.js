@@ -79,6 +79,10 @@
   z-index: 100;
 }
 
+.opentok-hardware-setup .opentok-hardware-setup-selector select::-ms-expand {
+   display: none;
+}
+
 .opentok-hardware-setup .opentok-hardware-setup-selector select {
   padding: 5px 8px;
   width: 100%;
