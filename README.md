@@ -9,6 +9,13 @@ using the [OpenTok.js] [1] library to select the camera and microphone. The
 client can use the camera and microphone to publish a stream to an OpenTok.js
 session.
 
+A pre-built version of the hardware setup component is hosted at opentok.com.
+You can add it to your web page with the following script tag:
+
+```js
+<script src="https://static.opentok.com/hardware-setup/v1/js/opentok-hardware-setup.js"></script>
+```
+
 Demo
 ----
 
@@ -63,8 +70,7 @@ Using the component
 
 Use the component along with the [OpenTok.js] [1] library.
 
-*Important restrictions:* Due to limitations in other browsers, the Hardware Setup 
-component is only available in Chrome and only works on sites loaded
+*Important restriction:* The Hardware Setup component is only available on sites loaded
 via HTTPS.
 
 ### createOpentokHardwareSetupComponent()
