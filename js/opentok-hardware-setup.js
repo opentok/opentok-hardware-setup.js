@@ -241,6 +241,10 @@ var createDevicePickerController = function(opts, changeHandler) {
   return _devicePicker;
 };
 
+var getWindowLocationProtocol = function() {
+  return window.location.protocol;
+};
+
 var shouldGetDevices = function(callback) {
   OT.getDevices(function(error, devices) {
     if (error) {
@@ -258,6 +262,17 @@ var shouldGetDevices = function(callback) {
   });
 };
 
+var getUserMedia;
+if (navigator.getUserMedia) {
+  getUserMedia = navigator.getUserMedia.bind(navigator);
+} else if (navigator.mozGetUserMedia) {
+  getUserMedia = navigator.mozGetUserMedia.bind(navigator);
+} else if (navigator.webkitGetUserMedia) {
+  getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
+} else if (window.OTPlugin && window.OTPlugin.getUserMedia) {
+  getUserMedia = window.OTPlugin.getUserMedia.bind(window.OTPlugin);
+}
+
 var authenticateForDeviceLabels = function(callback) {
   shouldGetDevices(function(error, constraints) {
     if (error) {
@@ -266,21 +281,22 @@ var authenticateForDeviceLabels = function(callback) {
       if (constraints.video === false && constraints.audio === false) {
         callback(new Error('There are no audio or video devices available'));
       } else {
-        if (window.location.protocol === 'http:') {
+        if (getWindowLocationProtocol() === 'http:') {
           callback();
         } else {
-          var getUserMedia;
-          if (navigator.getUserMedia) {
-            getUserMedia = navigator.getUserMedia.bind(navigator);
-          } else if (navigator.mozGetUserMedia) {
-            getUserMedia = navigator.mozGetUserMedia.bind(navigator);
-          } else if (navigator.webkitGetUserMedia) {
-            getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
-          } else {
+          if (!getUserMedia) {
             return callback(new Error('getUserMedia not supported in this browser'));
           }
           getUserMedia(constraints, function(stream) {
-            stream.stop();
+            if (window.MediaStreamTrack && window.MediaStreamTrack.prototype.stop) {
+              var tracks = stream.getTracks();
+              tracks.forEach(function(track) {
+                track.stop();
+              });
+            } else if (stream.stop) {
+             // older spec
+             stream.stop();
+            }
             callback();
           }, function(error) {
             var err = new Error(gumNamesToMessages[error.name]);
@@ -383,6 +399,7 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
       targetElement.setAttribute('id', container.getAttribute('id'));
     }
     for(var key in container.style) {
+      if (!container.style.hasOwnProperty(key)) { continue; }
       targetElement.style[key] = container.style[key];
     }
     while(container.childNodes.length > 0) {
@@ -463,5 +480,5 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
 
   return _hardwareSetup;
 
-};
+}
 

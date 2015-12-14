@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/opentok/opentok-hardware-setup.js.svg)](https://travis-ci.org/opentok/opentok-hardware-setup.js)
+[![Test Coverage](https://codeclimate.com/github/opentok/opentok-hardware-setup.js/badges/coverage.svg)](https://codeclimate.com/github/opentok/opentok-hardware-setup.js/coverage)
+
 OpenTok Hardware Setup
 ======================
 
@@ -5,6 +8,18 @@ The OpenTok Hardware Setup component provides a user interface for clients
 using the [OpenTok.js] [1] library to select the camera and microphone. The
 client can use the camera and microphone to publish a stream to an OpenTok.js
 session.
+
+A pre-built version of the hardware setup component is hosted at opentok.com.
+You can add it to your web page with the following script tag:
+
+```js
+<script src="https://static.opentok.com/hardware-setup/v1/js/opentok-hardware-setup.js"></script>
+```
+
+Demo
+----
+
+You can see the component running [here](https://opentok.github.io/opentok-hardware-setup.js/).
 
 Building the component
 ----------------------
@@ -55,8 +70,7 @@ Using the component
 
 Use the component along with the [OpenTok.js] [1] library.
 
-*Important restrictions:* Due to limitations in other browsers, the Hardware Setup 
-component is only available in Chrome and only works on sites loaded
+*Important restriction:* The Hardware Setup component is only available on sites loaded
 via HTTPS.
 
 ### createOpentokHardwareSetupComponent()
