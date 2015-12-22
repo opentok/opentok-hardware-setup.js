@@ -13,7 +13,7 @@ A pre-built version of the hardware setup component is hosted at opentok.com.
 You can add it to your web page with the following script tag:
 
 ```js
-<script src="https://static.opentok.com/hardware-setup/v1/js/opentok-hardware-setup.js"></script>
+<script src="https://static.opentok.com/hardware-setup/v1/js/opentok-hardware-setup.min.js"></script>
 ```
 
 Demo
