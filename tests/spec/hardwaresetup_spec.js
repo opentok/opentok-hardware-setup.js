@@ -421,14 +421,19 @@ describe('opentok.js hardware setup component', function() {
         selectTag: jasmine.any(Node),
         previewTag: jasmine.any(Node),
         mode: 'videoSource',
-        defaultDevice: null
+        defaultDevice: null,
+        publisherHandler: undefined,
+        accessDeniedHandler: undefined
       }, jasmine.any(Function));
 
       expect(window.createDevicePickerController).toHaveBeenCalledWith({
         selectTag: jasmine.any(Node),
         previewTag: jasmine.any(Node),
         mode: 'audioSource',
-        defaultDevice: null
+        defaultDevice: null,
+        publisherHandler: undefined,
+        accessDeniedHandler: undefined,
+        audioLevelUpdatedHandler: undefined
       }, jasmine.any(Function));
 
       expect(microphone.setLoading).toHaveBeenCalled();
