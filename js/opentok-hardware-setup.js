@@ -68,11 +68,9 @@ var createElement = function(nodeName, attributes, children, doc) {
         for (var n in subAttrs) {
           element[name][n] = subAttrs[n];
         }
-      }
-      else if (name === 'className') {
+      } else if (name === 'className') {
         element.className = attributes[name];
-      }
-      else {
+      } else {
         element.setAttribute(name, attributes[name]);
       }
     }
@@ -101,7 +99,7 @@ var createDevicePickerController = function(opts, changeHandler) {
       publisher,
       devicesById;
 
-  function onChange() {
+  var onChange = function onChange() {
     destroyExistingPublisher();
 
     var settings;
@@ -149,7 +147,12 @@ var createDevicePickerController = function(opts, changeHandler) {
       opts.previewTag.appendChild(audioDisplayParent);
     }
 
-    var pub = OT.initPublisher(widgetTag, settings);
+    var pub;
+    if (typeof opts.publisherHandler === 'function') {
+      pub = OT.initPublisher(widgetTag, settings, opts.publisherHandler);
+    } else {
+      pub = OT.initPublisher(widgetTag, settings);
+    }
 
     pub.on({
       accessAllowed: function() {
@@ -158,6 +161,10 @@ var createDevicePickerController = function(opts, changeHandler) {
         }
       }
     });
+
+    if (typeof opts.accessDeniedHandler === 'function') {
+      pub.on({ accessDenied: opts.accessDeniedHandler });
+    }
 
     var movingAvg = null;
 
@@ -177,11 +184,15 @@ var createDevicePickerController = function(opts, changeHandler) {
         var tagCount = audioDisplayTag.parentNode.offsetWidth / 10;
         audioDisplayTag.style.width = (Math.ceil(tagCount * logLevel) * 10) + 'px';
         // audioDisplayTag.innerHTML = (logLevel * 100).toFixed(0);
+
+        if (typeof opts.audioLevelUpdatedHandler === 'function') {
+          opts.audioLevelUpdatedHandler(event);
+        }
       });
     }
 
     publisher = pub;
-  }
+  };
 
   _devicePicker.cleanup = destroyExistingPublisher = function() {
     if(publisher) {
@@ -242,7 +253,7 @@ var createDevicePickerController = function(opts, changeHandler) {
 };
 
 var getWindowLocationProtocol = function() {
-  return window.location.protocol;
+  return (typeof window !== 'undefined') ? window.location.protocol : null;
 };
 
 var shouldGetDevices = function(callback) {
@@ -263,14 +274,16 @@ var shouldGetDevices = function(callback) {
 };
 
 var getUserMedia;
-if (navigator.getUserMedia) {
-  getUserMedia = navigator.getUserMedia.bind(navigator);
-} else if (navigator.mozGetUserMedia) {
-  getUserMedia = navigator.mozGetUserMedia.bind(navigator);
-} else if (navigator.webkitGetUserMedia) {
-  getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
-} else if (window.OTPlugin && window.OTPlugin.getUserMedia) {
-  getUserMedia = window.OTPlugin.getUserMedia.bind(window.OTPlugin);
+if (typeof window !== 'undefined') {
+  if (navigator.getUserMedia) {
+    getUserMedia = navigator.getUserMedia.bind(navigator);
+  } else if (navigator.mozGetUserMedia) {
+    getUserMedia = navigator.mozGetUserMedia.bind(navigator);
+  } else if (navigator.webkitGetUserMedia) {
+    getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
+  } else if (window.OTPlugin && window.OTPlugin.getUserMedia) {
+    getUserMedia = window.OTPlugin.getUserMedia.bind(window.OTPlugin);
+  }
 }
 
 var authenticateForDeviceLabels = function(callback) {
@@ -294,8 +307,8 @@ var authenticateForDeviceLabels = function(callback) {
                 track.stop();
               });
             } else if (stream.stop) {
-             // older spec
-             stream.stop();
+              // older spec
+              stream.stop();
             }
             callback();
           }, function(error) {
@@ -309,7 +322,7 @@ var authenticateForDeviceLabels = function(callback) {
   });
 };
 
-function createOpentokHardwareSetupComponent(targetElement, options, callback) {
+var createOpentokHardwareSetupComponent = function createOpentokHardwareSetupComponent(targetElement, options, callback) {
 
   if (typeof targetElement === 'string') {
     targetElement = document.getElementById(targetElement);
@@ -418,7 +431,9 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
         selectTag: camSelector,
         previewTag: camPreview,
         mode: 'videoSource',
-        defaultDevice: _options.defaultVideoDevice
+        defaultDevice: _options.defaultVideoDevice,
+        publisherHandler: options.videoPublisherHandler,
+        accessDeniedHandler: options.videoAccessDeniedHandler
       }, function(controller) {
         setPref('com.opentok.hardwaresetup.video', controller.pickedDevice.deviceId);
       });
@@ -427,7 +442,10 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
         selectTag: micSelector,
         previewTag: micPreview,
         mode: 'audioSource',
-        defaultDevice: _options.defaultAudioDevice
+        defaultDevice: _options.defaultAudioDevice,
+        publisherHandler: options.audioPublisherHandler,
+        accessDeniedHandler: options.audioAccessDeniedHandler,
+        audioLevelUpdatedHandler: options.audioLevelUpdatedHandler
       }, function(controller) {
         setPref('com.opentok.hardwaresetup.audio', controller.pickedDevice.deviceId);
       });
@@ -480,5 +498,14 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
 
   return _hardwareSetup;
 
-}
+};
 
+if (typeof exports !== 'undefined') {
+  exports.createDevicePickerController = createDevicePickerController;
+  exports.authenticateForDeviceLabels = authenticateForDeviceLabels;
+  exports.createOpentokHardwareSetupComponent = createOpentokHardwareSetupComponent;
+} else if (typeof window !== 'undefined') {
+  window.createDevicePickerController = createDevicePickerController;
+  window.authenticateForDeviceLabels = authenticateForDeviceLabels;
+  window.createOpentokHardwareSetupComponent = createOpentokHardwareSetupComponent;
+}
