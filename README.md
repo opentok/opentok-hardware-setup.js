@@ -82,21 +82,28 @@ parameters:
 * `targetElement` -- The DOM element in which to insert the hardware setup
 component. (See the insertMode property of the next parameter, options.)
 
-* `options` -- An optional argument that specifies how the component will be
+* `options`
+
+  * `targetElement` --  An optional argument that specifies how the component will be
 inserted in the HTML DOM, in relation to the targetElement parameter. You can
 set this parameter to one of the following values:
-
-  * `"replace"` -- The component replaces contents of the targetElement. This is
+      * `"replace"` -- The component replaces contents of the targetElement. This is
 the default.
-  * `"after"` -- The component is a new element inserted after the targetElement in
+      * `"after"` -- The component is a new element inserted after the targetElement in
 the HTML DOM. (Both the component and targetElement have the same parent
 element.)
-  * `"before"` -- The component is a new element inserted before the targetElement
+      * `"before"` -- The component is a new element inserted before the targetElement
 in the HTML DOM. (Both the component and targetElement have the same parent
 element.)
-  * `"append"` -- The component is a new element added as a child of the
+      * `"append"` -- The component is a new element added as a child of the
 targetElement. If there are other child elements, the component is appended as
 the last child element of the targetElement.
+
+  * `audioPublisherHandler` -- An optional function that is the `completionHandler` of [`OT.initPublisher`](https://tokbox.com/developer/sdks/js/reference/OT.html#initPublisher) of the audio stream.
+  * `videoPublisherHandler` -- An optional function that is the `completionHandler` of [`OT.initPublisher`](https://tokbox.com/developer/sdks/js/reference/OT.html#initPublisher) of the video stream.
+  * `audioAccessDeniedHandler` -- An optional function that handles `accessDenied` errors of the audio stream.
+  * `videoAccessDeniedHandler` -- An optional function that handles `accessDenied` errors of the video stream.
+  * `audioLevelUpdatedHandler` -- An optional function that handles `audioLevelUpdated` events of the audio stream.
 
 * `completionHandler` -- A function that is called is called when the component
 is rendered on the page or on error in calling to the method. Upon error, this

@@ -433,7 +433,7 @@ var createOpentokHardwareSetupComponent = function createOpentokHardwareSetupCom
         mode: 'videoSource',
         defaultDevice: _options.defaultVideoDevice,
         publisherHandler: options.videoPublisherHandler,
-        accessDeniedHandler: options.accessDeniedHandler
+        accessDeniedHandler: options.videoAccessDeniedHandler
       }, function(controller) {
         setPref('com.opentok.hardwaresetup.video', controller.pickedDevice.deviceId);
       });
@@ -444,7 +444,7 @@ var createOpentokHardwareSetupComponent = function createOpentokHardwareSetupCom
         mode: 'audioSource',
         defaultDevice: _options.defaultAudioDevice,
         publisherHandler: options.audioPublisherHandler,
-        accessDeniedHandler: options.accessDeniedHandler,
+        accessDeniedHandler: options.audioAccessDeniedHandler,
         audioLevelUpdatedHandler: options.audioLevelUpdatedHandler
       }, function(controller) {
         setPref('com.opentok.hardwaresetup.audio', controller.pickedDevice.deviceId);
