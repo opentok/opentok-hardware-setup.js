@@ -186,7 +186,6 @@ var createDevicePickerController = function(opts, changeHandler) {
 
     setTimeout(function () {
       if (settings.videoSource) {
-        currentTries++;
         try {
           //Check to see if the video actually came through
           pub.videoHeight();
@@ -195,7 +194,6 @@ var createDevicePickerController = function(opts, changeHandler) {
           onChange();   
         }       
       } else if (settings.audioSource) {
-        currentTries++;
         //If audio never came through
         if (movingAvg === null) {
           //Re-initiate device grab
@@ -503,3 +501,4 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
   return _hardwareSetup;
 
 }
+
