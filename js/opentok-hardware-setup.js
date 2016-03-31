@@ -13,6 +13,9 @@ var gumNamesToMessages = {
     'that the chosen devices are not in use by another application.'
 };
 
+var checkDidPublishTimeout = 2000;
+var maxRetryCounter = 5;
+
 var isArray = typeof Array.isArray && Array.isArray || function(arry) {
   return Object.prototype.toString.call(arry) === '[object Array]';
 };
@@ -181,6 +184,27 @@ var createDevicePickerController = function(opts, changeHandler) {
     }
 
     publisher = pub;
+
+    var currentTries = 0;
+    setTimeout(function () {
+      if (settings.videoSource && currentTries < maxRetryCounter) {
+        currentTries++;
+        try {
+          //Check to see if the video actually came through
+          pub.videoHeight();
+        } catch (e) {
+          //If not, re-initiate device grab
+          onChange();   
+        }       
+      } else if (settings.audioSource && currentTries < maxRetryCounter) {
+        currentTries++;
+        //If audio never came through
+        if (movingAvg === null) {
+          //Re-initiate device grab
+          onChange();
+        }
+      }
+    }, checkDidPublishTimeout);    
   }
 
   _devicePicker.cleanup = destroyExistingPublisher = function() {
