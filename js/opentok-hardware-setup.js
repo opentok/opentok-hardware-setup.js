@@ -14,7 +14,6 @@ var gumNamesToMessages = {
 };
 
 var checkDidPublishTimeout = 2000;
-var maxRetryCounter = 5;
 
 var isArray = typeof Array.isArray && Array.isArray || function(arry) {
   return Object.prototype.toString.call(arry) === '[object Array]';
@@ -185,9 +184,8 @@ var createDevicePickerController = function(opts, changeHandler) {
 
     publisher = pub;
 
-    var currentTries = 0;
     setTimeout(function () {
-      if (settings.videoSource && currentTries < maxRetryCounter) {
+      if (settings.videoSource) {
         currentTries++;
         try {
           //Check to see if the video actually came through
@@ -196,7 +194,7 @@ var createDevicePickerController = function(opts, changeHandler) {
           //If not, re-initiate device grab
           onChange();   
         }       
-      } else if (settings.audioSource && currentTries < maxRetryCounter) {
+      } else if (settings.audioSource) {
         currentTries++;
         //If audio never came through
         if (movingAvg === null) {
@@ -505,4 +503,3 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
   return _hardwareSetup;
 
 }
-
