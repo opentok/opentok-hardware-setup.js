@@ -147,6 +147,7 @@ var createDevicePickerController = function(opts, changeHandler) {
 
       opts.previewTag.appendChild(widgetTag);
       opts.previewTag.appendChild(audioDisplayParent);
+
     }
 
     var pub = OT.initPublisher(widgetTag, settings);
@@ -414,27 +415,6 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
       callback(err);
     } else {
 
-      camera = createDevicePickerController({
-        selectTag: camSelector,
-        previewTag: camPreview,
-        mode: 'videoSource',
-        defaultDevice: _options.defaultVideoDevice
-      }, function(controller) {
-        setPref('com.opentok.hardwaresetup.video', controller.pickedDevice.deviceId);
-      });
-
-      microphone = createDevicePickerController({
-        selectTag: micSelector,
-        previewTag: micPreview,
-        mode: 'audioSource',
-        defaultDevice: _options.defaultAudioDevice
-      }, function(controller) {
-        setPref('com.opentok.hardwaresetup.audio', controller.pickedDevice.deviceId);
-      });
-
-      camera.setLoading();
-      microphone.setLoading();
-
       OT.getDevices(function(error, devices) {
         if (error) {
           callback(error);
@@ -461,12 +441,32 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
           micPreview
         ]));
 
+        camera = createDevicePickerController({
+          selectTag: camSelector,
+          previewTag: camPreview,
+          mode: 'videoSource',
+          defaultDevice: _options.defaultVideoDevice
+        }, function(controller) {
+          setPref('com.opentok.hardwaresetup.video', controller.pickedDevice.deviceId);
+
+          microphone = createDevicePickerController({
+            selectTag: micSelector,
+            previewTag: micPreview,
+            mode: 'audioSource',
+            defaultDevice: _options.defaultAudioDevice
+          }, function(controller) {
+            setPref('com.opentok.hardwaresetup.audio', controller.pickedDevice.deviceId);
+          });
+          microphone.setLoading();
+          microphone.setDeviceList(devices.filter(function(device) {
+            return device.kind === 'audioInput';
+          }));
+
+        });
+        camera.setLoading();
+
         camera.setDeviceList(devices.filter(function(device) {
           return device.kind === 'videoInput';
-        }));
-
-        microphone.setDeviceList(devices.filter(function(device) {
-          return device.kind === 'audioInput';
         }));
 
         state = 'chooseDevices';
