@@ -263,7 +263,11 @@ var shouldGetDevices = function(callback) {
 };
 
 var getUserMedia;
-if (navigator.getUserMedia) {
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  getUserMedia = function(constraints, onStream, onError) {
+    navigator.mediaDevices.getUserMedia(constraints).then(onStream, onError);
+  };
+} else if (navigator.getUserMedia) {
   getUserMedia = navigator.getUserMedia.bind(navigator);
 } else if (navigator.mozGetUserMedia) {
   getUserMedia = navigator.mozGetUserMedia.bind(navigator);
