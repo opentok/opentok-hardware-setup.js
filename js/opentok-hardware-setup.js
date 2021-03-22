@@ -13,6 +13,8 @@ var gumNamesToMessages = {
     'that the chosen devices are not in use by another application.'
 };
 
+var checkDidPublishTimeout = 2000;
+
 var isArray = typeof Array.isArray && Array.isArray || function(arry) {
   return Object.prototype.toString.call(arry) === '[object Array]';
 };
@@ -181,6 +183,24 @@ var createDevicePickerController = function(opts, changeHandler) {
     }
 
     publisher = pub;
+
+    setTimeout(function () {
+      if (settings.videoSource) {
+        try {
+          //Check to see if the video actually came through
+          pub.videoHeight();
+        } catch (e) {
+          //If not, re-initiate device grab
+          onChange();   
+        }       
+      } else if (settings.audioSource) {
+        //If audio never came through
+        if (movingAvg === null) {
+          //Re-initiate device grab
+          onChange();
+        }
+      }
+    }, checkDidPublishTimeout);    
   }
 
   _devicePicker.cleanup = destroyExistingPublisher = function() {
