@@ -29,9 +29,8 @@ versions of the component.
 
 Run the following to build the component:
 
-    npm install -g gulp
     npm install
-    gulp
+    npm run build
 
 This creates a .js file that is useable with JavaScript module loaders and
 puts it in the ./dist directory, along with the .css file and a minified version

@@ -3,29 +3,29 @@
 var gumNamesToMessages = {
   PermissionDeniedError: 'End-user denied permission to hardware devices',
   PermissionDismissedError: 'End-user dismissed permission to hardware devices',
-  NotSupportedError: 'A constraint specified is not supported by the browser.',
-  ConstraintNotSatisfiedError: 'It\'s not possible to satisfy one or more constraints ' +
+  NotSupportedError: 'A varraint specified is not supported by the browser.',
+  varraintNotSatisfiedError: 'It\'s not possible to satisfy one or more varraints ' +
     'passed into the getUserMedia function',
-  OverconstrainedError: 'Due to changes in the environment, one or more mandatory ' +
-    'constraints can no longer be satisfied.',
+  OvervarrainedError: 'Due to changes in the environment, one or more mandatory ' +
+    'varraints can no longer be satisfied.',
   NoDevicesFoundError: 'No voice or video input devices are available on this machine.',
   HardwareUnavailableError: 'The selected voice or video devices are unavailable. Verify ' +
     'that the chosen devices are not in use by another application.'
 };
 
-var isArray = typeof Array.isArray && Array.isArray || function(arry) {
+var isArray = typeof Array.isArray && Array.isArray || function (arry) {
   return Object.prototype.toString.call(arry) === '[object Array]';
 };
 
-var each = Array.prototype.forEach || function(iter, ctx) {
-  for(var idx = 0, count = this.length || 0; idx < count; ++idx) {
-    if(idx in this) {
+var each = Array.prototype.forEach || function (iter, ctx) {
+  for (var idx = 0, count = this.length || 0; idx < count; ++idx) {
+    if (idx in this) {
       iter.call(ctx, this[idx], idx);
     }
   }
 };
 
-var addClass = function(el, className) {
+function addClass(el, className) {
   if (el.classList) {
     el.classList.add(className);
   } else {
@@ -33,7 +33,7 @@ var addClass = function(el, className) {
   }
 };
 
-var removeClass = function(el, className) {
+function removeClass(el, className) {
   if (el.classList) {
     el.classList.remove(className);
   } else {
@@ -43,25 +43,25 @@ var removeClass = function(el, className) {
   }
 };
 
-var setPref = function(key, value) {
+function setPref(key, value) {
   try {
     localStorage.setItem(key, value);
-  } catch (err) {}
+  } catch (err) { }
 };
 
-var getPref = function(key) {
+function getPref(key) {
   try {
     return localStorage.getItem(key);
-  } catch (err) {}
+  } catch (err) { }
   return undefined;
 };
 
-var createElement = function(nodeName, attributes, children, doc) {
+function createElement(nodeName, attributes, children, doc) {
   var element = (doc || document).createElement(nodeName);
 
   if (attributes) {
     for (var name in attributes) {
-      if (typeof(attributes[name]) === 'object') {
+      if (typeof (attributes[name]) === 'object') {
         if (!element[name]) element[name] = {};
 
         var subAttrs = attributes[name];
@@ -78,28 +78,28 @@ var createElement = function(nodeName, attributes, children, doc) {
     }
   }
 
-  var setChildren = function(child) {
-    if(typeof child === 'string') {
+  var setChildren = function (child) {
+    if (typeof child === 'string') {
       element.innerHTML = element.innerHTML + child;
     } else {
       element.appendChild(child);
     }
   };
 
-  if(isArray(children)) {
+  if (isArray(children)) {
     each.call(children, setChildren);
-  } else if(children) {
+  } else if (children) {
     setChildren(children);
   }
 
   return element;
 };
 
-var createDevicePickerController = function(opts, changeHandler) {
+function createDevicePickerController(opts, changeHandler) {
   var _devicePicker = {},
-      destroyExistingPublisher,
-      publisher,
-      devicesById;
+    destroyExistingPublisher,
+    publisher,
+    devicesById;
 
   function onChange() {
     destroyExistingPublisher();
@@ -108,7 +108,7 @@ var createDevicePickerController = function(opts, changeHandler) {
 
     _devicePicker.pickedDevice = devicesById[opts.selectTag.value];
 
-    if(!_devicePicker.pickedDevice) {
+    if (!_devicePicker.pickedDevice) {
       return;
     }
 
@@ -129,7 +129,7 @@ var createDevicePickerController = function(opts, changeHandler) {
     settings[opts.mode] = _devicePicker.pickedDevice.deviceId;
 
     var widgetTag = opts.previewTag,
-        audioDisplayTag, audioDisplayParent;
+      audioDisplayTag, audioDisplayParent;
 
     if (opts.mode === 'audioSource') {
       opts.previewTag.innerHTML = '';
@@ -152,7 +152,7 @@ var createDevicePickerController = function(opts, changeHandler) {
     var pub = OT.initPublisher(widgetTag, settings);
 
     pub.on({
-      accessAllowed: function() {
+      accessAllowed: function () {
         if (typeof changeHandler === 'function') {
           changeHandler(_devicePicker);
         }
@@ -163,7 +163,7 @@ var createDevicePickerController = function(opts, changeHandler) {
 
     if (opts.mode === 'audioSource') {
 
-      pub.on('audioLevelUpdated', function(event) {
+      pub.on('audioLevelUpdated', function (event) {
         if (movingAvg === null || movingAvg <= event.audioLevel) {
           movingAvg = event.audioLevel;
         } else {
@@ -183,8 +183,8 @@ var createDevicePickerController = function(opts, changeHandler) {
     publisher = pub;
   }
 
-  _devicePicker.cleanup = destroyExistingPublisher = function() {
-    if(publisher) {
+  _devicePicker.cleanup = destroyExistingPublisher = function () {
+    if (publisher) {
       publisher.destroy();
       publisher = void 0;
     }
@@ -196,7 +196,7 @@ var createDevicePickerController = function(opts, changeHandler) {
     opt.setAttribute('disabled', '');
   };
 
-  var deviceLabel = function(device) {
+  var deviceLabel = function (device) {
     if (device.label) {
       return device.label;
     }
@@ -212,8 +212,8 @@ var createDevicePickerController = function(opts, changeHandler) {
   _devicePicker.setDeviceList = function (devices) {
     opts.selectTag.innerHTML = '';
     devicesById = {};
-    if(devices.length > 0) {
-      devices.map(addDevice).map(function(tag) {
+    if (devices.length > 0) {
+      devices.map(addDevice).map(function (tag) {
         opts.selectTag.appendChild(tag);
       });
       opts.selectTag.removeAttribute('disabled');
@@ -226,7 +226,7 @@ var createDevicePickerController = function(opts, changeHandler) {
     onChange();
   };
 
-  _devicePicker.setLoading = function() {
+  _devicePicker.setLoading = function () {
     disableSelector(opts.selectTag, 'Loading...');
   };
 
@@ -241,21 +241,21 @@ var createDevicePickerController = function(opts, changeHandler) {
   return _devicePicker;
 };
 
-var getWindowLocationProtocol = function() {
+function getWindowLocationProtocol() {
   return window.location.protocol;
 };
 
-var shouldGetDevices = function(callback) {
-  OT.getDevices(function(error, devices) {
+function shouldGetDevices(callback) {
+  OT.getDevices(function (error, devices) {
     if (error) {
       callback(error);
       return;
     }
     callback(undefined, {
-      audio: devices.some(function(device) {
+      audio: devices.some(function (device) {
         return device.kind === 'audioInput';
       }),
-      video: devices.some(function(device) {
+      video: devices.some(function (device) {
         return device.kind === 'videoInput';
       })
     });
@@ -264,8 +264,8 @@ var shouldGetDevices = function(callback) {
 
 var getUserMedia;
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-  getUserMedia = function(constraints, onStream, onError) {
-    navigator.mediaDevices.getUserMedia(constraints).then(onStream, onError);
+  getUserMedia = function (varraints, onStream, onError) {
+    navigator.mediaDevices.getUserMedia(varraints).then(onStream, onError);
   };
 } else if (navigator.getUserMedia) {
   getUserMedia = navigator.getUserMedia.bind(navigator);
@@ -277,12 +277,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
   getUserMedia = window.OTPlugin.getUserMedia.bind(window.OTPlugin);
 }
 
-var authenticateForDeviceLabels = function(callback) {
-  shouldGetDevices(function(error, constraints) {
+function authenticateForDeviceLabels(callback) {
+  shouldGetDevices(function (error, varraints) {
     if (error) {
       callback(error);
     } else {
-      if (constraints.video === false && constraints.audio === false) {
+      if (varraints.video === false && varraints.audio === false) {
         callback(new Error('There are no audio or video devices available'));
       } else {
         if (getWindowLocationProtocol() === 'http:') {
@@ -291,18 +291,18 @@ var authenticateForDeviceLabels = function(callback) {
           if (!getUserMedia) {
             return callback(new Error('getUserMedia not supported in this browser'));
           }
-          getUserMedia(constraints, function(stream) {
+          getUserMedia(varraints, function (stream) {
             if (window.MediaStreamTrack && window.MediaStreamTrack.prototype.stop) {
               var tracks = stream.getTracks();
-              tracks.forEach(function(track) {
+              tracks.forEach(function (track) {
                 track.stop();
               });
             } else if (stream.stop) {
-             // older spec
-             stream.stop();
+              // older spec
+              stream.stop();
             }
             callback();
-          }, function(error) {
+          }, function (error) {
             var err = new Error(gumNamesToMessages[error.name]);
             err.name = error.name;
             callback(err);
@@ -320,15 +320,15 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
   }
 
   var _hardwareSetup = {},
-      _options,
-      state = 'getDevices',
-      camera,
-      microphone,
-      camSelector,
-      camPreview,
-      micSelector,
-      micPreview,
-      container;
+    _options,
+    state = 'getDevices',
+    camera,
+    microphone,
+    camSelector,
+    camPreview,
+    micSelector,
+    micPreview,
+    container;
 
   if (typeof options === 'function') {
     callback = options;
@@ -336,7 +336,7 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
   }
 
   if (callback == null) {
-    throw new Error('A completion handler is required when calling ' +
+    throw new Error('A compvarion handler is required when calling ' +
       'createOpentokHardwareSetupComponent');
   }
 
@@ -346,31 +346,31 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
     defaultVideoDevice: options.defaultVideoDevice || getPref('com.opentok.hardwaresetup.video')
   };
 
-  _hardwareSetup.audioSource = function() {
+  _hardwareSetup.audioSource = function () {
     return microphone && microphone.pickedDevice;
   };
 
-  _hardwareSetup.videoSource = function() {
+  _hardwareSetup.videoSource = function () {
     return camera && camera.pickedDevice;
   };
 
-  _hardwareSetup.destroy = function() {
-    if(state === 'destroyed') {
+  _hardwareSetup.destroy = function () {
+    if (state === 'destroyed') {
       return;
     }
-    if(camera) {
+    if (camera) {
       camera.cleanup();
     }
-    if(microphone) {
+    if (microphone) {
       microphone.cleanup();
     }
-    if(state === 'chooseDevices') {
+    if (state === 'chooseDevices') {
       targetElement.parentNode.removeChild(targetElement);
     }
     state = 'destroyed';
   };
 
-  if(!targetElement) {
+  if (!targetElement) {
     callback(new Error('No element provided to place component'));
     return;
   }
@@ -385,35 +385,35 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
   });
 
   var insertMode = _options.insertMode;
-  if(insertMode !== 'replace') {
-    if(insertMode === 'append') {
+  if (insertMode !== 'replace') {
+    if (insertMode === 'append') {
       targetElement.appendChild(container);
       targetElement = container;
-    } else if(insertMode === 'before') {
+    } else if (insertMode === 'before') {
       targetElement.parentNode.insertBefore(container, targetElement);
       targetElement = container;
-    } else if(insertMode === 'after') {
+    } else if (insertMode === 'after') {
       targetElement.parentNode.insertBefore(container, targetElement.nextSibling);
       targetElement = container;
     }
   } else {
     targetElement.innerHTML = '';
     addClass(targetElement, 'opentok-hardware-setup');
-    if(!targetElement.getAttribute('id')) {
+    if (!targetElement.getAttribute('id')) {
       targetElement.setAttribute('id', container.getAttribute('id'));
     }
-    for(var key in container.style) {
+    for (var key in container.style) {
       if (!container.style.hasOwnProperty(key)) { continue; }
       targetElement.style[key] = container.style[key];
     }
-    while(container.childNodes.length > 0) {
+    while (container.childNodes.length > 0) {
       targetElement.appendChild(container.firstChild);
     }
   }
 
   addClass(targetElement, 'opentok-hardware-setup-loading');
 
-  authenticateForDeviceLabels(function(err) {
+  authenticateForDeviceLabels(function (err) {
     if (err) {
       callback(err);
     } else {
@@ -423,7 +423,7 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
         previewTag: camPreview,
         mode: 'videoSource',
         defaultDevice: _options.defaultVideoDevice
-      }, function(controller) {
+      }, function (controller) {
         setPref('com.opentok.hardwaresetup.video', controller.pickedDevice.deviceId);
       });
 
@@ -432,20 +432,20 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
         previewTag: micPreview,
         mode: 'audioSource',
         defaultDevice: _options.defaultAudioDevice
-      }, function(controller) {
+      }, function (controller) {
         setPref('com.opentok.hardwaresetup.audio', controller.pickedDevice.deviceId);
       });
 
       camera.setLoading();
       microphone.setLoading();
 
-      OT.getDevices(function(error, devices) {
+      OT.getDevices(function (error, devices) {
         if (error) {
           callback(error);
           return;
         }
 
-        if(state === 'destroyed') {
+        if (state === 'destroyed') {
           return; // They destroyed us before we got the devices, bail.
         }
 
@@ -465,11 +465,11 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
           micPreview
         ]));
 
-        camera.setDeviceList(devices.filter(function(device) {
+        camera.setDeviceList(devices.filter(function (device) {
           return device.kind === 'videoInput';
         }));
 
-        microphone.setDeviceList(devices.filter(function(device) {
+        microphone.setDeviceList(devices.filter(function (device) {
           return device.kind === 'audioInput';
         }));
 
@@ -483,6 +483,4 @@ function createOpentokHardwareSetupComponent(targetElement, options, callback) {
   });
 
   return _hardwareSetup;
-
 }
-
